@@ -1,0 +1,24 @@
+workflows:
+  android-foss-debug:
+    name: NellSpotif Android FOSS Debug
+    max_build_duration: 120
+    instance_type: linux_x2
+    environment:
+      ubuntu: 24.04
+      java: 21
+    triggering:
+      events:
+        - push
+        - pull_request
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: false
+      cancel_previous_builds: true
+    scripts:
+      - name: Configure Android SDK
+        script: echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
+      - name: Build FOSS debug APK
+        script: ./gradlew --no-daemon --console=plain :app:assembleFossDebug
+    artifacts:
+      - app/build/outputs/**/*.apk
